@@ -29,7 +29,32 @@ export default function VoiceAssistant({ profile }: { profile: any }) {
   const startSession = async () => {
     setIsConnecting(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+      // Helper to determine if a value is a placeholder
+      const isPlaceholder = (val: string | undefined): boolean => {
+        return !val || val.includes('YOUR_') || val.includes('MY_');
+      };
+
+      const getApiKey = () => {
+          // 1. Check for user-provided key with VITE_ prefix (Standard Vite way)
+          const viteKey = import.meta.env.VITE_GOOGLE_API_KEY;
+          if (viteKey && !viteKey.includes('YOUR_GOOGLE_API_KEY')) return viteKey;
+          
+          // 2. Check for VITE_GOOGLE_API_KEY as a process.env (passed via define)
+          const viteProcessKey = process.env.VITE_GOOGLE_API_KEY;
+          if (viteProcessKey && !viteProcessKey.includes('YOUR_GOOGLE_API_KEY') && viteProcessKey !== "") return viteProcessKey;
+
+          // 3. Check for GOOGLE_API_KEY as a process.env (passed via define)
+          const googleKey = process.env.GOOGLE_API_KEY;
+          if (googleKey && googleKey !== "" && googleKey !== "YOUR_GOOGLE_API_KEY") return googleKey;
+
+          // 4. Fallback to platform-provided GEMINI_API_KEY
+          const platformKey = process.env.GEMINI_API_KEY;
+          if (platformKey && platformKey !== 'MY_GEMINI_API_KEY' && platformKey !== '') return platformKey;
+          
+          return "";
+      };
+
+      const ai = new GoogleGenAI({ apiKey: getApiKey() });
       
       const sessionPromise = ai.live.connect({
         model: "gemini-3.1-flash-live-preview",

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { auth, googleProvider, db, handleFirestoreError, OperationType } from '../lib/firebase';
-import firebaseConfig from '../../firebase-applet-config.json';
 import { signInWithPopup, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, query, where, getDocs, updateDoc, serverTimestamp, limit } from 'firebase/firestore';
 import { Shield, AlertCircle, CheckCircle2, Info, User, Key, Building2, ShieldCheck, UserCheck, Users, Zap } from 'lucide-react';

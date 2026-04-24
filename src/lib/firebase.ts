@@ -5,7 +5,23 @@ import { getStorage } from 'firebase/storage';
 
 // We'll try to import the config, but fallback to empty if it doesn't exist yet
 // The AIS environment will provide this file.
-import firebaseConfig from '../../firebase-applet-config.json';
+import configFromFile from '../../firebase-applet-config.json';
+
+// Helper to determine if a value is a placeholder
+const isPlaceholder = (val: string | undefined): boolean => {
+  return !val || val.includes('YOUR_') || val.includes('MY_');
+};
+
+// Define configuration using environment variables if available, otherwise fallback to the JSON config
+const firebaseConfig = {
+  apiKey: !isPlaceholder(import.meta.env.VITE_FIREBASE_API_KEY) ? import.meta.env.VITE_FIREBASE_API_KEY : configFromFile.apiKey,
+  authDomain: !isPlaceholder(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN) ? import.meta.env.VITE_FIREBASE_AUTH_DOMAIN : configFromFile.authDomain,
+  projectId: !isPlaceholder(import.meta.env.VITE_FIREBASE_PROJECT_ID) ? import.meta.env.VITE_FIREBASE_PROJECT_ID : configFromFile.projectId,
+  storageBucket: !isPlaceholder(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) ? import.meta.env.VITE_FIREBASE_STORAGE_BUCKET : configFromFile.storageBucket,
+  messagingSenderId: !isPlaceholder(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID) ? import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID : configFromFile.messagingSenderId,
+  appId: !isPlaceholder(import.meta.env.VITE_FIREBASE_APP_ID) ? import.meta.env.VITE_FIREBASE_APP_ID : configFromFile.appId,
+  firestoreDatabaseId: !isPlaceholder(import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID) ? import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID : configFromFile.firestoreDatabaseId,
+};
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

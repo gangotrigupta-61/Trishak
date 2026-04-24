@@ -30,13 +30,31 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load Firebase Config
+// Load Firebase Config and prioritize environment variables
 const firebaseConfigPath = path.join(__dirname, 'firebase-applet-config.json');
-let firebaseConfig: any = {};
+let configFromFile: any = {};
 if (fs.existsSync(firebaseConfigPath)) {
-  firebaseConfig = JSON.parse(fs.readFileSync(firebaseConfigPath, 'utf8'));
-  console.log(`DEBUG: Loaded Firebase Config for TRISHAK: ${firebaseConfig.projectId}`);
+  configFromFile = JSON.parse(fs.readFileSync(firebaseConfigPath, 'utf8'));
 }
+
+// Helper to determine if a value is a placeholder
+const isPlaceholder = (val: string | undefined): boolean => {
+  return !val || val.includes('YOUR_') || val.includes('MY_');
+};
+
+const firebaseConfig = {
+  apiKey: !isPlaceholder(process.env.VITE_FIREBASE_API_KEY) ? process.env.VITE_FIREBASE_API_KEY : configFromFile.apiKey,
+  authDomain: !isPlaceholder(process.env.VITE_FIREBASE_AUTH_DOMAIN) ? process.env.VITE_FIREBASE_AUTH_DOMAIN : configFromFile.authDomain,
+  projectId: !isPlaceholder(process.env.VITE_FIREBASE_PROJECT_ID) ? process.env.VITE_FIREBASE_PROJECT_ID : configFromFile.projectId,
+  storageBucket: !isPlaceholder(process.env.VITE_FIREBASE_STORAGE_BUCKET) ? process.env.VITE_FIREBASE_STORAGE_BUCKET : configFromFile.storageBucket,
+  messagingSenderId: !isPlaceholder(process.env.VITE_FIREBASE_MESSAGING_SENDER_ID) ? process.env.VITE_FIREBASE_MESSAGING_SENDER_ID : configFromFile.messagingSenderId,
+  appId: !isPlaceholder(process.env.VITE_FIREBASE_APP_ID) ? process.env.VITE_FIREBASE_APP_ID : configFromFile.appId,
+  firestoreDatabaseId: !isPlaceholder(process.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID) ? process.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID : configFromFile.firestoreDatabaseId,
+};
+
+console.log(`DEBUG: Initializing Firebase for TRISHAK: ${firebaseConfig.projectId}`);
+console.log(`DEBUG: GEMINI_API_KEY available: ${process.env.GEMINI_API_KEY ? 'Yes (starts with ' + process.env.GEMINI_API_KEY.substring(0, 4) + ')' : 'No'}`);
+console.log(`DEBUG: VITE_GOOGLE_API_KEY available: ${process.env.VITE_GOOGLE_API_KEY ? 'Yes' : 'No'}`);
 
 // Initialize Client SDK for polling with high availability settings (long-polling)
 const clientApp = initializeClientApp(firebaseConfig);
