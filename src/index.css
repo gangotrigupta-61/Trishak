@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-pulse-red: pulse-red 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes pulse-red {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+    }
+    50% {
+      transform: scale(1.02);
+      box-shadow: 0 0 20px 10px rgba(220, 38, 38, 0);
+    }
+  }
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+  -webkit-overflow-scrolling: touch;
+}
